@@ -28,7 +28,7 @@
             color: #38bdf8;
             word-break: break-word;
         }
-        /* Kotak Player Preview Thumbnail */
+        /* Kotak Player Preview Thumbnail (Tanpa Iframe) */
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -59,6 +59,7 @@
             align-items: center;
             gap: 10px;
             transition: all 0.2s;
+            text-align: center;
         }
         .player-wrapper:hover .play-overlay {
             background: #2563eb;
@@ -173,7 +174,7 @@
     <!-- Judul Video Aktif -->
     <h2 id="videoTitle">Memuat video...</h2>
 
-    <!-- Area Pemutar Preview (Mengatasi Error X-Frame-Options) -->
+    <!-- Area Pemutar Preview (Murni Gambar & Tombol Klik ke Exastream) -->
     <div class="player-wrapper" id="playerBox" onclick="openVideoSource()">
         <img id="mainPoster" src="" alt="Thumbnail Video">
         <div class="play-overlay">▶ Klik untuk Nonton Video</div>
@@ -243,25 +244,20 @@
 
     let currentVideo = null;
 
-    // Fungsi memilih video
     function selectVideo(videoData) {
         currentVideo = videoData;
-        
         videoTitle.innerText = videoData.title;
         mainPoster.src = videoData.poster;
         watchBtn.href = videoData.url;
-
         renderPlaylist(searchInput.value);
     }
 
-    // Fungsi membuka link sumber video Exastream saat area player diklik
     function openVideoSource() {
         if (currentVideo) {
             window.open(currentVideo.url, '_blank');
         }
     }
 
-    // Fungsi Render Playlist & Pencarian
     function renderPlaylist(filter = "") {
         playlistContainer.innerHTML = "";
         const filteredVideos = videos.filter(v => v.title.toLowerCase().includes(filter.toLowerCase()));
@@ -281,24 +277,14 @@
                 <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
                 <span>▶ ${vid.title}</span>
             `;
-            
-            item.addEventListener('click', function() {
-                selectVideo(vid);
-            });
-
+            item.addEventListener('click', () => selectVideo(vid));
             playlistContainer.appendChild(item);
         });
     }
 
-    // Event listener untuk kolom pencarian
-    searchInput.addEventListener('input', (e) => {
-        renderPlaylist(e.target.value);
-    });
+    searchInput.addEventListener('input', (e) => renderPlaylist(e.target.value));
 
-    // Muat video pertama secara otomatis saat halaman dibuka
-    if (videos.length > 0) {
-        selectVideo(videos[0]);
-    }
+    if (videos.length > 0) selectVideo(videos[0]);
 </script>
 
 </body>
