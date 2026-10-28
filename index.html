@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahyon - Video Player & Playlist - Adsterra Integrated</title>
-    
-    <!-- Iklan Popunder Adsterra -->
-    <script type="text/javascript" src="https://thewilddetail.com/58/5d/14/585d14a1088579ccf27a4840dfa44967.js"></script>
+    <title>Ahyon - Video Player & Playlist</title>
 
     <style>
         * { box-sizing: border-box; }
@@ -34,15 +31,19 @@
         .player-wrapper {
             position: relative;
             width: 100%;
+            padding-top: 56.25%; /* Rasio aspek 16:9 */
             background: #000;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
-        video {
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: auto;
-            display: block;
+            height: 100%;
+            border: none;
         }
         .action-buttons {
             display: flex;
@@ -84,12 +85,40 @@
             padding: 16px;
             border-radius: 12px;
         }
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
         .playlist-title {
             font-size: 15px;
             font-weight: bold;
-            margin-bottom: 12px;
             color: #94a3b8;
         }
+        .search-box {
+            padding: 8px 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box:focus { border-color: #38bdf8; }
+
+        .playlist-container {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .playlist-container::-webkit-scrollbar { width: 6px; }
+        .playlist-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
         .playlist-item {
             display: flex;
             align-items: center;
@@ -122,17 +151,6 @@
             font-size: 14px;
             color: #f1f5f9;
         }
-
-        /* Wadah Social Bar di Bagian Bawah */
-        .social-bar-container {
-            margin-top: 24px;
-            display: none; 
-            justify-content: center;
-            width: 100%;
-        }
-        .social-bar-container.active {
-            display: flex;
-        }
     </style>
 </head>
 <body>
@@ -141,36 +159,28 @@
     <!-- Judul Video Aktif -->
     <h2 id="videoTitle">Memuat video...</h2>
 
-    <!-- Pemutar Video -->
+    <!-- Pemutar Video (Menggunakan Iframe untuk Exastream) -->
     <div class="player-wrapper" id="playerWrapper">
-        <video id="mainVideo" controls playsinline poster="">
-            Browser Anda tidak mendukung pemutar video.
-        </video>
+        <iframe id="mainVideoFrame" src="" allowfullscreen scrolling="no" frameborder="0"></iframe>
     </div>
 
     <!-- Tombol Interaktif -->
     <div class="action-buttons">
-        <a href="#" id="downloadBtn" class="btn btn-download" download target="_blank">Download Video</a>
+        <a href="#" id="downloadBtn" class="btn btn-download" download target="_blank">Watch Source</a>
         <button id="fullscreenBtn" class="btn btn-fs">Tonton Fullscreen</button>
     </div>
 
-    <!-- DAFTAR VIDEO / PLAYLIST -->
+    <!-- DAFTAR VIDEO / PLAYLIST & PENCARIAN -->
     <div class="playlist-section">
-        <div class="playlist-title">Daftar Pilihan Video:</div>
-        <div id="playlistContainer"></div>
-    </div>
-
-    <!-- Wadah Social Bar (Muncul Setelah Video Diputar) -->
-    <div id="socialBarWrapper" class="social-bar-container">
-        <!-- Iklan Social Bar Adsterra -->
-        <script type="text/javascript" src="https://thewilddetail.com/c4/4b/2c/c44b2ccc7687c2c208901dc7f9633fa2.js"></script>
+        <div class="playlist-header">
+            <div class="playlist-title">Daftar Pilihan Video (Ahyon):</div>
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari video...">
+        </div>
+        <div id="playlistContainer" class="playlist-container"></div>
     </div>
 </div>
 
 <script>
-    // --- KONFIGURASI ADSTERRA & PLAYLIST ---
-    const SMARTLINK_URL = "https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe";
-
     // Daftar Video Ahyon
     const videos = [
         {
@@ -211,57 +221,60 @@
         }
     ];
 
-    const videoElement = document.getElementById('mainVideo');
+    const videoFrame = document.getElementById('mainVideoFrame');
     const videoTitle = document.getElementById('videoTitle');
     const playerWrapper = document.getElementById('playerWrapper');
     const downloadBtn = document.getElementById('downloadBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const socialBarWrapper = document.getElementById('socialBarWrapper');
     const playlistContainer = document.getElementById('playlistContainer');
+    const searchInput = document.getElementById('searchInput');
 
     let currentVideo = null;
-    let playSmartlinkTriggered = false;
 
-    // Fungsi memuat video baru ke dalam player
+    // Fungsi memuat video baru ke dalam iframe
     function loadVideo(videoData) {
         currentVideo = videoData;
-        playSmartlinkTriggered = false;
         
         videoTitle.innerText = videoData.title;
-        videoElement.src = videoData.url;
-        videoElement.poster = videoData.poster; // Menampilkan gambar stay/poster sebelum video diputar
+        videoFrame.src = videoData.url;
         downloadBtn.href = videoData.url;
 
-        const fileName = `${videoData.title.replace(/\s+/g, '_')}.mp4`;
-        downloadBtn.setAttribute('download', fileName);
+        // Render ulang playlist dengan filter aktif saat ini
+        renderPlaylist(searchInput.value);
+    }
 
-        videoElement.load();
+    // Fungsi Render Playlist & Pencarian
+    function renderPlaylist(filter = "") {
+        playlistContainer.innerHTML = "";
+        const filteredVideos = videos.filter(v => v.title.toLowerCase().includes(filter.toLowerCase()));
 
-        // Highlight playlist item yang aktif
-        document.querySelectorAll('.playlist-item').forEach(item => {
-            if (item.getAttribute('data-id') === videoData.id) {
+        if (filteredVideos.length === 0) {
+            playlistContainer.innerHTML = '<div style="text-align:center; padding: 15px; color: #64748b;">Video tidak ditemukan</div>';
+            return;
+        }
+
+        filteredVideos.forEach((vid) => {
+            const item = document.createElement('div');
+            item.className = 'playlist-item';
+            if (currentVideo && currentVideo.id === vid.id) {
                 item.classList.add('active');
-            } else {
-                item.classList.remove('active');
             }
+            item.innerHTML = `
+                <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
+                <span>▶ ${vid.title}</span>
+            `;
+            
+            item.addEventListener('click', function() {
+                loadVideo(vid);
+            });
+
+            playlistContainer.appendChild(item);
         });
     }
 
-    // Render daftar playlist beserta gambar thumbnail ke HTML
-    videos.forEach((vid) => {
-        const item = document.createElement('div');
-        item.className = 'playlist-item';
-        item.setAttribute('data-id', vid.id);
-        item.innerHTML = `
-            <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
-            <span>▶ ${vid.title}</span>
-        `;
-        
-        item.addEventListener('click', function() {
-            loadVideo(vid);
-        });
-
-        playlistContainer.appendChild(item);
+    // Event listener untuk kolom pencarian
+    searchInput.addEventListener('input', (e) => {
+        renderPlaylist(e.target.value);
     });
 
     // Muat video pertama secara otomatis saat halaman dibuka
@@ -269,35 +282,9 @@
         loadVideo(videos[0]);
     }
 
-    // --- 1. LOGIKA TOMBOL PLAY PADA PLAYER ---
-    videoElement.addEventListener('play', function() {
-        if (!currentVideo) return;
-
-        if (!playSmartlinkTriggered) {
-            window.open(SMARTLINK_URL, '_blank');
-            playSmartlinkTriggered = true;
-        }
-
-        const storageKey = `popunder_played_${currentVideo.id}`;
-        if (!localStorage.getItem(storageKey)) {
-            localStorage.setItem(storageKey, 'true');
-        }
-
-        if (!socialBarWrapper.classList.contains('active')) {
-            socialBarWrapper.classList.add('active');
-        }
-    });
-
-    // --- 2. TOMBOL DOWNLOAD ---
-    downloadBtn.addEventListener('click', function(e) {
-        window.open(SMARTLINK_URL, '_blank');
-    });
-
-    // --- 3. TOMBOL FULLSCREEN ---
+    // --- TOMBOL FULLSCREEN ---
     fullscreenBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        
-        window.open(SMARTLINK_URL, '_blank');
 
         if (playerWrapper.requestFullscreen) {
             playerWrapper.requestFullscreen();
@@ -305,8 +292,6 @@
             playerWrapper.webkitRequestFullscreen();
         } else if (playerWrapper.msRequestFullscreen) {
             playerWrapper.msRequestFullscreen();
-        } else if (videoElement.webkitEnterFullscreen) {
-            videoElement.webkitEnterFullscreen();
         }
     });
 </script>
