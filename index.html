@@ -28,23 +28,44 @@
             color: #38bdf8;
             word-break: break-word;
         }
+        /* Kotak Player Preview Thumbnail */
         .player-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* Rasio aspek 16:9 */
+            padding-top: 56.25%; /* Rasio 16:9 */
             background: #000;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
         }
-        .player-wrapper iframe {
+        .player-wrapper img {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
         }
+        .play-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid #38bdf8;
+            color: #38bdf8;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .player-wrapper:hover .play-overlay {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -63,19 +84,12 @@
             transition: background 0.2s;
             display: inline-block;
         }
-        .btn-download {
+        .btn-watch {
             background-color: #2563eb;
             color: #ffffff;
         }
-        .btn-download:hover {
+        .btn-watch:hover {
             background-color: #1d4ed8;
-        }
-        .btn-fs {
-            background-color: #334155;
-            color: #ffffff;
-        }
-        .btn-fs:hover {
-            background-color: #475569;
         }
         
         /* Playlist Section */
@@ -159,15 +173,15 @@
     <!-- Judul Video Aktif -->
     <h2 id="videoTitle">Memuat video...</h2>
 
-    <!-- Pemutar Video (Menggunakan Iframe untuk Exastream) -->
-    <div class="player-wrapper" id="playerWrapper">
-        <iframe id="mainVideoFrame" src="" allowfullscreen scrolling="no" frameborder="0"></iframe>
+    <!-- Area Pemutar Preview (Mengatasi Error X-Frame-Options) -->
+    <div class="player-wrapper" id="playerBox" onclick="openVideoSource()">
+        <img id="mainPoster" src="" alt="Thumbnail Video">
+        <div class="play-overlay">▶ Klik untuk Nonton Video</div>
     </div>
 
     <!-- Tombol Interaktif -->
     <div class="action-buttons">
-        <a href="#" id="downloadBtn" class="btn btn-download" download target="_blank">Watch Source</a>
-        <button id="fullscreenBtn" class="btn btn-fs">Tonton Fullscreen</button>
+        <a href="#" id="watchBtn" class="btn btn-watch" target="_blank">Tonton di Exastream</a>
     </div>
 
     <!-- DAFTAR VIDEO / PLAYLIST & PENCARIAN -->
@@ -221,26 +235,30 @@
         }
     ];
 
-    const videoFrame = document.getElementById('mainVideoFrame');
     const videoTitle = document.getElementById('videoTitle');
-    const playerWrapper = document.getElementById('playerWrapper');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const mainPoster = document.getElementById('mainPoster');
+    const watchBtn = document.getElementById('watchBtn');
     const playlistContainer = document.getElementById('playlistContainer');
     const searchInput = document.getElementById('searchInput');
 
     let currentVideo = null;
 
-    // Fungsi memuat video baru ke dalam iframe
-    function loadVideo(videoData) {
+    // Fungsi memilih video
+    function selectVideo(videoData) {
         currentVideo = videoData;
         
         videoTitle.innerText = videoData.title;
-        videoFrame.src = videoData.url;
-        downloadBtn.href = videoData.url;
+        mainPoster.src = videoData.poster;
+        watchBtn.href = videoData.url;
 
-        // Render ulang playlist dengan filter aktif saat ini
         renderPlaylist(searchInput.value);
+    }
+
+    // Fungsi membuka link sumber video Exastream saat area player diklik
+    function openVideoSource() {
+        if (currentVideo) {
+            window.open(currentVideo.url, '_blank');
+        }
     }
 
     // Fungsi Render Playlist & Pencarian
@@ -265,7 +283,7 @@
             `;
             
             item.addEventListener('click', function() {
-                loadVideo(vid);
+                selectVideo(vid);
             });
 
             playlistContainer.appendChild(item);
@@ -279,21 +297,8 @@
 
     // Muat video pertama secara otomatis saat halaman dibuka
     if (videos.length > 0) {
-        loadVideo(videos[0]);
+        selectVideo(videos[0]);
     }
-
-    // --- TOMBOL FULLSCREEN ---
-    fullscreenBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        if (playerWrapper.requestFullscreen) {
-            playerWrapper.requestFullscreen();
-        } else if (playerWrapper.webkitRequestFullscreen) {
-            playerWrapper.webkitRequestFullscreen();
-        } else if (playerWrapper.msRequestFullscreen) {
-            playerWrapper.msRequestFullscreen();
-        }
-    });
 </script>
 
 </body>
