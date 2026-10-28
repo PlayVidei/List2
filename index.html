@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahyon - Video Player & Playlist</title>
+    <title>Ahyon - Premium Video Dashboard</title>
+
+    <!-- Script Iklan Popunder -->
+    <script src="https://thewilddetail.com/58/5d/14/585d14a1088579ccf27a4840dfa44967.js"></script>
+
+    <!-- Script Iklan Social Bar -->
+    <script src="https://thewilddetail.com/c4/4b/2c/c44b2ccc7687c2c208901dc7f9633fa2.js"></script>
 
     <style>
-        * { box-sizing: border-box; }
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,53 +29,89 @@
         }
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
         }
+        
+        /* Header Dashboard */
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1e293b;
+        }
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+        }
+        .badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
         h2#videoTitle {
             font-size: 18px;
-            margin-bottom: 12px;
-            color: #38bdf8;
+            margin-bottom: 14px;
+            color: #f8fafc;
+            line-height: 1.4;
             word-break: break-word;
         }
-        /* Kotak Player Preview Thumbnail (Tanpa Iframe) */
+
+        /* Player Wrapper */
         .player-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* Rasio 16:9 */
+            padding-top: 56.25%; /* 16:9 Ratio */
             background: #000;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
             cursor: pointer;
+            border: 1px solid #1e293b;
         }
         .player-wrapper img {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .player-wrapper:hover img {
+            transform: scale(1.02);
         }
         .play-overlay {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.9);
             border: 2px solid #38bdf8;
-            color: #38bdf8;
-            padding: 14px 24px;
+            color: #ffffff;
+            padding: 14px 28px;
             border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            transition: all 0.2s ease;
             text-align: center;
+            white-space: nowrap;
         }
         .player-wrapper:hover .play-overlay {
             background: #2563eb;
-            color: #fff;
-            border-color: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
         }
 
+        /* Tombol Aksi */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -74,57 +119,68 @@
         }
         .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 14px 20px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.2s;
-            display: inline-block;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .btn-watch {
-            background-color: #2563eb;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         }
         .btn-watch:hover {
-            background-color: #1d4ed8;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transform: translateY(-1px);
         }
-        
-        /* Playlist Section */
+
+        /* Section Playlist */
         .playlist-section {
             margin-top: 24px;
-            background: #1e293b;
-            padding: 16px;
-            border-radius: 12px;
+            background: #141c2e;
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid #1e293b;
         }
         .playlist-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
             gap: 10px;
         }
         .playlist-title {
             font-size: 15px;
-            font-weight: bold;
-            color: #94a3b8;
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .search-box {
-            padding: 8px 12px;
-            background: #0f172a;
+            padding: 9px 14px;
+            background: #0b0f19;
             border: 1px solid #334155;
-            border-radius: 6px;
+            border-radius: 8px;
             color: #fff;
             font-size: 14px;
-            width: 200px;
+            width: 220px;
             outline: none;
             transition: border-color 0.2s;
         }
-        .search-box:focus { border-color: #38bdf8; }
+        .search-box:focus { 
+            border-color: #38bdf8; 
+        }
 
         .playlist-container {
             max-height: 380px;
@@ -138,25 +194,26 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: #0f172a;
+            background: #0b0f19;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
         }
         .playlist-item:hover {
-            background: #334155;
-            transform: translateX(4px);
+            background: #1e293b;
+            border-color: #334155;
         }
         .playlist-item.active {
             border-left: 4px solid #38bdf8;
             background: #1e293b;
-            font-weight: bold;
+            font-weight: 600;
         }
         .playlist-thumb {
-            width: 80px;
-            height: 48px;
+            width: 84px;
+            height: 50px;
             object-fit: cover;
             border-radius: 6px;
             flex-shrink: 0;
@@ -166,38 +223,76 @@
             font-size: 14px;
             color: #f1f5f9;
         }
+
+        /* Container Native Banner Ad di Paling Bawah */
+        .ad-container {
+            margin-top: 24px;
+            width: 100%;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #334155;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="brand">AHYON STREAM</div>
+        <div class="badge">HD Player</div>
+    </div>
+
     <!-- Judul Video Aktif -->
     <h2 id="videoTitle">Memuat video...</h2>
 
-    <!-- Area Pemutar Preview (Murni Gambar & Tombol Klik ke Exastream) -->
-    <div class="player-wrapper" id="playerBox" onclick="openVideoSource()">
-        <img id="mainPoster" src="" alt="Thumbnail Video">
-        <div class="play-overlay">▶ Klik untuk Nonton Video</div>
+    <!-- Preview Player (Klik Membuka Smartlink & Exastream Sekaligus) -->
+    <div class="player-wrapper" id="playerBox" onclick="triggerSmartlinkAndWatch()">
+        <img id="mainPoster" src="https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png" alt="Thumbnail Video Utama">
+        <div class="play-overlay">▶ Putar Video Sekarang</div>
     </div>
 
-    <!-- Tombol Interaktif -->
+    <!-- Tombol Utama -->
     <div class="action-buttons">
-        <a href="#" id="watchBtn" class="btn btn-watch" target="_blank">Tonton di Exastream</a>
+        <a href="javascript:void(0)" onclick="triggerSmartlinkAndWatch()" id="watchBtn" class="btn btn-watch">
+            <span>▶</span> Tonton Video Utama
+        </a>
     </div>
 
-    <!-- DAFTAR VIDEO / PLAYLIST & PENCARIAN -->
+    <!-- DAFTAR VIDEO / PLAYLIST (Aman dari Iklan) -->
     <div class="playlist-section">
         <div class="playlist-header">
-            <div class="playlist-title">Daftar Pilihan Video (Ahyon):</div>
+            <div class="playlist-title">📁 Pilihan Video Lainnya:</div>
             <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari video...">
         </div>
         <div id="playlistContainer" class="playlist-container"></div>
     </div>
+
+    <!-- Native Banner Ad Section -->
+    <div class="ad-container">
+        <script async="async" data-cfasync="false" src="https://thewilddetail.com/4ac27ece24247e6abb30fb78ea2f725e/invoke.js"></script>
+        <div id="container-4ac27ece24247e6abb30fb78ea2f725e"></div>
+    </div>
 </div>
 
 <script>
-    // Daftar Video Ahyon
+    // URL Smartlink
+    const SMARTLINK_URL = "https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe";
+
+    // Daftar Video Ahyon (isDark: true menandakan video tanpa thumbnail di playlist)
     const videos = [
+        {
+            id: "vid_main",
+            title: "Ahyon - Video Utama",
+            url: "https://videy.co/v/?id=55sS7ugo1",
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
         {
             id: "vid_01",
             title: "Ahyon - Part 1",
@@ -233,31 +328,78 @@
             title: "Ahyon - Part 6",
             url: "https://trbnvideo.live/v/08SNgxe9",
             poster: "https://i.ibb.co.com/3VGdCJ8/Screenshot-2026-1029-001858.png"
+        },
+        // Tambahan Video Pilihan Lainnya (Tanpa Thumbnail)
+        {
+            id: "vid_extra_1",
+            title: "Ahyon - Special Extra 1",
+            url: "https://trbnvideo.live/f/RMnkD2my",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
+        {
+            id: "vid_extra_2",
+            title: "Ahyon - Special Extra 2",
+            url: "https://trbnvideo.live/f/1teiHsVA",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
+        {
+            id: "vid_extra_3",
+            title: "Ahyon - Special Extra 3",
+            url: "https://trbnvideo.live/f/q6ydNuKs",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
+        {
+            id: "vid_extra_4",
+            title: "Ahyon - Special Extra 4",
+            url: "https://trbnvideo.live/f/kd6n9Pj8",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
+        {
+            id: "vid_extra_5",
+            title: "Ahyon - Special Extra 5",
+            url: "https://trbnvideo.live/f/0J9kl2m4",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
+        },
+        {
+            id: "vid_extra_6",
+            title: "Ahyon - Special Extra 6",
+            url: "https://trbnvideo.live/f/n1P3Nujp",
+            noThumb: true,
+            poster: "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png"
         }
     ];
 
     const videoTitle = document.getElementById('videoTitle');
     const mainPoster = document.getElementById('mainPoster');
-    const watchBtn = document.getElementById('watchBtn');
     const playlistContainer = document.getElementById('playlistContainer');
     const searchInput = document.getElementById('searchInput');
 
     let currentVideo = null;
 
+    // Fungsi untuk membuka Smartlink SEKALIGUS video asli secara bersamaan
+    function triggerSmartlinkAndWatch() {
+        if (currentVideo) {
+            window.open(SMARTLINK_URL, '_blank');
+            setTimeout(() => {
+                window.open(currentVideo.url, '_blank');
+            }, 250);
+        }
+    }
+
+    // Fungsi memilih video dari playlist
     function selectVideo(videoData) {
         currentVideo = videoData;
         videoTitle.innerText = videoData.title;
         mainPoster.src = videoData.poster;
-        watchBtn.href = videoData.url;
         renderPlaylist(searchInput.value);
     }
 
-    function openVideoSource() {
-        if (currentVideo) {
-            window.open(currentVideo.url, '_blank');
-        }
-    }
-
+    // Render daftar playlist (Kondisional: tanpa gambar jika noThumb bernilai true)
     function renderPlaylist(filter = "") {
         playlistContainer.innerHTML = "";
         const filteredVideos = videos.filter(v => v.title.toLowerCase().includes(filter.toLowerCase()));
@@ -273,10 +415,18 @@
             if (currentVideo && currentVideo.id === vid.id) {
                 item.classList.add('active');
             }
-            item.innerHTML = `
-                <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
-                <span>▶ ${vid.title}</span>
-            `;
+
+            if (vid.noThumb) {
+                // Tampilan khusus tanpa thumbnail (hanya teks)
+                item.innerHTML = `<span style="padding: 4px 0;">▶ ${vid.title}</span>`;
+            } else {
+                // Tampilan standar dengan thumbnail
+                item.innerHTML = `
+                    <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
+                    <span>▶ ${vid.title}</span>
+                `;
+            }
+
             item.addEventListener('click', () => selectVideo(vid));
             playlistContainer.appendChild(item);
         });
@@ -284,6 +434,7 @@
 
     searchInput.addEventListener('input', (e) => renderPlaylist(e.target.value));
 
+    // Inisialisasi video pertama
     if (videos.length > 0) selectVideo(videos[0]);
 </script>
 
