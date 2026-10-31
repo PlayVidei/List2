@@ -3,399 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIDEY PLAYER - Premium Video Dashboard</title>
-
+    <title>VIDEY PLAYER</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 20px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            width: 100%;
-            max-width: 850px;
-        }
-        
-        /* Header Dashboard */
-        .dashboard-header {
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #0b0f19; color: #fff; padding-bottom: 30px; }
+
+        /* Header Navbar */
+        header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #1e293b;
+            padding: 12px 16px;
+            background: #111827;
+            border-bottom: 1px solid #1f2937;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-box {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .brand-title { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: #fff; }
+        .brand-title span { color: #06b6d4; }
+        
+        .search-box {
+            background: #1f2937;
+            border-radius: 20px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 160px;
+            border: 1px solid #374151;
+        }
+        .search-box svg { width: 14px; height: 14px; fill: #9ca3af; flex-shrink: 0; }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+            width: 100%;
+        }
+        .search-box input::placeholder { color: #9ca3af; }
+
+        /* Main Container */
+        .container {
+            max-width: 600px;
+            margin: 16px auto;
+            padding: 0 12px;
         }
 
-        /* Judul Logo Kuno / Klasik Estetik */
-        .brand {
-            font-size: 26px;
-            font-weight: 800;
-            font-family: 'Cinzel', 'Times New Roman', 'Georgia', serif;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #38bdf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            text-shadow: 0 2px 15px rgba(245, 158, 11, 0.2);
-            border-bottom: 2px solid #f59e0b;
-            padding-bottom: 2px;
+        /* Main Video Player Section (Siku / Border-radius 0) */
+        .main-player-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 0px; /* Siku */
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-
-        h2#videoTitle {
-            font-size: 17px;
-            margin-bottom: 12px;
-            color: #f8fafc;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-
-        /* Kartu Player Utama (Desain Modern, Lebih Pendek / Landscape) */
-        .player-card {
-            background: linear-gradient(145deg, #131b2e 0%, #0d1322 100%);
-            padding: 18px;
-            border-radius: 18px;
-            border: 1px solid rgba(56, 189, 248, 0.15);
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.05);
-        }
-
-        .player-wrapper {
+        .video-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* Rasio 16:9 */
+            aspect-ratio: 16/9;
             background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .player-wrapper img {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        .player-wrapper:hover img {
-            transform: scale(1.02);
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
         }
         
-        /* Tombol Ikon Segitiga Play di Tengah */
-        .play-overlay {
+        /* Tombol Play Overlay Tengah (Smartlink) */
+        .custom-play-btn {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.85);
-            border: 2px solid rgba(56, 189, 248, 0.4);
-            color: #38bdf8;
-            width: 70px;
-            height: 70px;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .play-icon-circle {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
-            padding-left: 4px;
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
-            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+            transition: transform 0.2s;
         }
-        .player-wrapper:hover .play-overlay {
-            background: #38bdf8;
-            color: #0b0f19;
-            transform: translate(-50%, -50%) scale(1.1);
+        .custom-play-btn:hover .play-icon-circle { transform: scale(1.1); }
+        .play-icon-circle svg { width: 24px; height: 24px; fill: #fff; margin-left: 3px; }
+
+        .main-video-title {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f3f4f6;
         }
 
-        /* Section Playlist */
-        .playlist-section {
-            margin-bottom: 24px;
-            background: transparent;
-            padding: 0;
-            border: none;
-        }
-        .playlist-header {
+        /* Section Header */
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
         }
-        .playlist-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #f8fafc;
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+        .section-title svg { width: 16px; height: 16px; fill: #ec4899; }
+        .page-badge {
+            background: #1f2937;
+            border: 1px solid #374151;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #9ca3af;
         }
 
-        /* Container Pilihan Video Utama (Berjajar 2 Kolom, Judul di Bawah Thumbnail) */
-        .playlist-grid {
+        /* Video Grid List */
+        .video-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 4px;
+            margin-bottom: 16px;
         }
-        .playlist-grid::-webkit-scrollbar { width: 6px; }
-        .playlist-grid::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-
-        .playlist-item {
-            display: flex;
-            flex-direction: column; /* Membuat isi berurutan ke bawah (Thumbnail di atas, Judul di bawah) */
-            background: #141c2e;
-            padding: 10px;
-            border-radius: 12px;
+        /* Video Card Siku (Border-radius 0) */
+        .video-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 0px; /* Siku */
+            overflow: hidden;
             cursor: pointer;
-            border: 1px solid #1e293b;
-            transition: all 0.2s ease;
+            position: relative;
+            transition: all 0.2s;
         }
-        .playlist-item:hover {
-            background: #1e293b;
-            border-color: #334155;
-        }
-        .playlist-item.active {
-            border-color: #38bdf8;
-            background: #192237;
-        }
-        .playlist-thumb-wrapper {
+        .video-card:hover { border-color: #374151; }
+        .video-card.active { border-color: #ec4899; }
+
+        .thumb-box {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* Rasio 16:9 untuk thumbnail */
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #000;
-            margin-bottom: 8px;
+            aspect-ratio: 16/9;
+            background: #1f2937;
         }
-        .playlist-thumb {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+        .thumb-box img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-        }
-        .playlist-info span {
-            font-size: 13px;
-            color: #f1f5f9;
             display: block;
+        }
+        .thumb-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+        }
+        .thumb-play-btn svg { width: 16px; height: 16px; fill: #fff; margin-left: 2px; }
+
+        /* Badge Durasi di Pojok Kanan Bawah Thumbnail */
+        .video-duration {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        /* Badge Diputar */
+        .badge-playing {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: #ec4899;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        .card-title {
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #e5e7eb;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            text-align: left;
-            font-weight: 500;
-        }
-        
-        /* Container Video Lainnya (Tetap Menurun / Kolom ke bawah) */
-        .playlist-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
-        /* Gaya untuk item Video Lainnya */
-        .extra-item {
+        /* Pagination Bar Siku */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 8px 12px;
+            border-radius: 0px; /* Siku */
+        }
+        .page-btn {
+            background: #1f2937;
+            border: none;
+            color: #9ca3af;
+            width: 32px;
+            height: 32px;
+            border-radius: 0px; /* Siku */
             display: flex;
             align-items: center;
-            gap: 14px;
-            background: #141c2e;
-            padding: 14px 16px;
-            border-radius: 12px;
+            justify-content: center;
             cursor: pointer;
-            border: 1px solid #1e293b;
-            transition: all 0.2s ease;
         }
-        .extra-item:hover {
-            background: #1e293b;
-            border-color: #334155;
+        .page-numbers {
+            display: flex;
+            gap: 6px;
         }
-        .folder-icon {
-            font-size: 18px;
+        .num-btn {
+            background: #1f2937;
+            border: none;
+            color: #9ca3af;
+            width: 32px;
+            height: 32px;
+            border-radius: 0px; /* Siku */
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
         }
-        .extra-item span {
-            font-size: 14px;
-            color: #f1f5f9;
+        .num-btn.active {
+            background: #ec4899;
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Header Logo -->
-    <div class="dashboard-header">
-        <div class="brand">VIDEY PLAYER</div>
-    </div>
-
-    <!-- KARTU 1: Pemutar Video Utama -->
-    <div class="player-card">
-        <h2 id="videoTitle">Memuat video...</h2>
-        <div class="player-wrapper" id="playerBox" onclick="handleVideoClick()">
-            <img id="mainPoster" src="" alt="Thumbnail Video Utama">
-            <div class="play-overlay">▶</div>
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-box">
+                <img src="https://i.ibb.co/qYbbmQ6R/Screenshot-2026-1031-075743.png" alt="Logo" id="logoImg">
+            </div>
+            <div class="brand-title">VIDEY <span>PLAYER</span></div>
         </div>
-    </div>
-
-    <!-- KARTU 2: Pilihan Video Utama (Berjajar 2 Kolom, Judul di Bawah) -->
-    <div class="playlist-section">
-        <div class="playlist-header">
-            <div class="playlist-title">Pilihan Video</div>
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="searchInput" placeholder="Cari video..." onkeyup="filterVideos()">
         </div>
-        <div id="playlistContainer" class="playlist-grid"></div>
-    </div>
+    </header>
 
-    <!-- KARTU 3: Video Lainnya -->
-    <div class="playlist-section">
-        <div class="playlist-header">
-            <div class="playlist-title">More Videos</div>
+    <div class="container">
+        
+        <!-- Pemutar Video Utama -->
+        <div class="main-player-card">
+            <div class="video-wrapper">
+                <div class="custom-play-btn" id="mainPlayOverlay" onclick="handleMainPlay()">
+                    <div class="play-icon-circle">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+                <iframe id="mainVideoFrame" src="https://trbnvideo.live/e/Q8OTb3l0" allowfullscreen></iframe>
+            </div>
+            <div class="main-video-title" id="mainTitleDisplay">Bawa spg nginap di hotel</div>
         </div>
-        <div id="extraPlaylistContainer" class="playlist-container"></div>
+
+        <!-- Judul Bagian Pilihan Video -->
+        <div class="section-header">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                Pilihan Video
+            </div>
+            <div class="page-badge" id="pageIndicator">Halaman 1 / 4</div>
+        </div>
+
+        <!-- Daftar Pilihan Video (Grid) -->
+        <div class="video-grid" id="videoGrid">
+            <!-- Grid dinamis -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn" onclick="changePage(currentPage - 1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <div class="page-numbers" id="paginationNumbers">
+                <!-- Tombol halaman dinamis -->
+            </div>
+            <button class="page-btn" onclick="changePage(currentPage + 1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+
     </div>
-</div>
 
-<script>
-    // URL Smartlink
-    const SMARTLINK_URL = "https://auctionr.org/4/24b55e3636d607271fdc76c2cd116ebe";
+    <script>
+        const smartlinkURL = 'https://apiguinee.org/4/f48d1b3a91d0b1fd3db51c3c384a044b';
 
-    // Daftar Video Utama
-    const mainVideos = [
-        {
-            id: "vid_01",
-            title: "Ahyon - Part1",
-            url: "https://trbnvideo.live/v/DtjKh9CG",
-            poster: "https://i.ibb.co.com/Tqvwkkd8/Screenshot-2026-1029-002208.png"
-        },
-        {
-            id: "vid_02",
-            title: "Ahyon - Part2",
-            url: "https://trbnvideo.live/v/S4A8HsxX",
-            poster: "https://i.ibb.co.com/cKhW90v3/Screenshot-2026-1029-003252.png"
-        },
-        {
-            id: "vid_03",
-            title: "Ahyon - Part3",
-            url: "https://trbnvideo.live/v/W5K2ggG1",
-            poster: "https://i.ibb.co.com/GmnYvhX/Screenshot-2026-1029-003737.png"
-        },
-        {
-            id: "vid_04",
-            title: "Ahyon - Part4",
-            url: "https://trbnvideo.live/v/k8NrIjie",
-            poster: "https://i.ibb.co.com/LzN5Pw3L/Screenshot-2026-1028-235223.png"
-        },
-        {
-            id: "vid_05",
-            title: "Ahyon - Part5",
-            url: "https://trbnvideo.live/v/E6yudbMs",
-            poster: "https://i.ibb.co.com/S433n7H2/Screenshot-2026-1029-001612.png"
-        },
-        {
-            id: "vid_06",
-            title: "Ahyon - Part6",
-            url: "https://trbnvideo.live/v/08SNgxe9",
-            poster: "https://i.ibb.co.com/3VGdCJ8/Screenshot-2026-1029-001858.png"
+        // Data 16 Video lengkap dengan tambahan properti durasi
+        const allVideos = [
+            { id: 0, title: "Bawa spg nginap di hotel", video: "https://trbnvideo.live/e/Q8OTb3l0", thumb: "https://i.ibb.co/qYbbmQ6R/Screenshot-2026-1031-075743.png", duration: "12:45" },
+            { id: 1, title: "Boking cewek cantik", video: "https://trbnvideo.live/e/q1LeKbHe", thumb: "https://i.ibb.co/VWHyPXbj/Screenshot-2026-1031-075955.png", duration: "15:20" },
+            { id: 2, title: "Gadis sma cantik", video: "https://trbnvideo.live/e/CQcGvyVa", thumb: "https://i.ibb.co/S7sFtzXm/Screenshot-2026-1031-080400.png", duration: "09:15" },
+            { id: 3, title: "Abg kesakitan smpe nangis", video: "https://trbnvideo.live/e/SVXyR42j", thumb: "https://i.ibb.co/Gvfr6vtV/Screenshot-2026-1031-083941.png", duration: "18:30" },
+            { id: 4, title: "Ahyon jilbab", video: "https://trbnvideo.live/e/DtjKh9CG", thumb: "https://i.ibb.co.com/Tqvwkkd8/Screenshot-2026-1029-002208.png", duration: "11:05" },
+            { id: 5, title: "nginep di kost pacar", video: "https://trbnvideo.live/e/S4A8HsxX", thumb: "https://i.ibb.co.com/cKhW90v3/Screenshot-2026-1029-003252.png", duration: "14:50" },
+            { id: 6, title: "Goyangannya bikin gak tahan", video: "https://trbnvideo.live/e/W5K2ggG1", thumb: "https://i.ibb.co.com/GmnYvhX/Screenshot-2026-1029-003737.png", duration: "08:40" },
+            { id: 7, title: "Sepupu toubrutt", video: "https://trbnvideo.live/e/k8NrIjie", thumb: "https://i.ibb.co.com/LzN5Pw3L/Screenshot-2026-1028-235223.png", duration: "13:10" },
+            { id: 8, title: "Minta dibeliin iphone", video: "https://trbnvideo.live/e/E6yudbMs", thumb: "https://i.ibb.co.com/S433n7H2/Screenshot-2026-1029-001612.png", duration: "10:25" },
+            { id: 9, title: "jilbab toubrutt", video: "https://trbnvideo.live/e/08SNgxe9", thumb: "https://i.ibb.co.com/3VGdCJ8/Screenshot-2026-1029-001858.png", duration: "16:00" },
+            { id: 10, title: "Gina jilboob", video: "https://trbnvideo.live/e/F51NRzNP", thumb: "https://i.ibb.co/NnKs0Hnd/images-4.jpg", duration: "07:50" },
+            { id: 11, title: "Gina Hijaber toge binal", video: "https://trbnvideo.live/e/H6jg5ztO", thumb: "https://i.ibb.co/gZ3QjTdD/images-1.jpg", duration: "19:40" },
+            { id: 12, title: "Malu tapi menikmati", video: "https://trbnvideo.live/e/GSBw9P3Q", thumb: "https://i.ibb.co/mVGSn03K/Screenshot-2026-1031-072703.png", duration: "12:00" },
+            { id: 13, title: "Jilbab mendesah dapet batang gede", video: "https://trbnvideo.live/e/NTgAYglk", thumb: "https://i.ibb.co/Kp6q01J2/Screenshot-2026-1031-072954.png", duration: "21:15" },
+            { id: 14, title: "Jilbab coklat binal", video: "https://trbnvideo.live/e/a03aWEYS", thumb: "https://i.ibb.co/tMPDkKmj/Screenshot-2026-1031-073143.png", duration: "14:30" },
+            { id: 15, title: "Cantik & mulus", video: "https://trbnvideo.live/e/XXvnStXb", thumb: "https://i.ibb.co/LdLFpdL8/Screenshot-2026-1031-084559.png", duration: "09:55" }
+        ];
+
+        let currentActiveId = 0;
+        let currentPage = 1;
+        const itemsPerPage = 4;
+        let filteredVideos = [...allVideos];
+
+        const mainVideoFrame = document.getElementById('mainVideoFrame');
+        const mainTitleDisplay = document.getElementById('mainTitleDisplay');
+        const mainPlayOverlay = document.getElementById('mainPlayOverlay');
+
+        function handleMainPlay() {
+            window.open(smartlinkURL, '_blank');
+            mainPlayOverlay.style.display = 'none';
         }
-    ];
 
-    // Daftar Video Lainnya (More Videos)
-    const extraVideos = [
-        {
-            id: "vid_extra_1",
-            title: "Videy Special Extra1",
-            url: "https://trbnvideo.live/f/RMnkD2my"
-        },
-        {
-            id: "vid_extra_2",
-            title: "Videy Special Extra2",
-            url: "https://trbnvideo.live/f/1teiHsVA"
-        },
-        {
-            id: "vid_extra_3",
-            title: "Videy Special Extra3",
-            url: "https://trbnvideo.live/f/q6ydNuKs"
-        },
-        {
-            id: "vid_extra_4",
-            title: "Videy Special Extra4",
-            url: "https://trbnvideo.live/f/kd6n9Pj8"
-        }
-    ];
+        function selectVideo(id) {
+            window.open(smartlinkURL, '_blank');
+            currentActiveId = id;
+            const selected = allVideos.find(v => v.id === id);
 
-    const videoTitle = document.getElementById('videoTitle');
-    const mainPoster = document.getElementById('mainPoster');
-    const playlistContainer = document.getElementById('playlistContainer');
-    const extraPlaylistContainer = document.getElementById('extraPlaylistContainer');
-
-    let currentVideo = null;
-    let clickState = 0; // 0 = Menampilkan Smartlink, 1 = Langsung ke Video Asli
-
-    // Fungsi memilih video utama dan memperbarui preview atas
-    function selectVideo(videoData) {
-        currentVideo = videoData;
-        videoTitle.innerText = videoData.title;
-        mainPoster.src = videoData.poster || "https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png";
-        renderPlaylists();
-    }
-
-    // Logika Klik Tombol Play Utama: Bergantian antara Smartlink & Video Asli
-    function handleVideoClick() {
-        if (!currentVideo) return;
-
-        if (clickState === 0) {
-            window.open(SMARTLINK_URL, '_blank');
-            clickState = 1; 
-        } else {
-            window.open(currentVideo.url, '_blank');
-            clickState = 0; 
-        }
-    }
-
-    // Render daftar playlist
-    function renderPlaylists() {
-        // 1. Render Pilihan Video Utama (Berjajar 2 Kolom, Judul di Bawah Thumbnail)
-        playlistContainer.innerHTML = "";
-        mainVideos.forEach((vid) => {
-            const item = document.createElement('div');
-            item.className = 'playlist-item';
-            if (currentVideo && currentVideo.id === vid.id) {
-                item.classList.add('active');
+            if (selected) {
+                mainVideoFrame.src = selected.video;
+                mainTitleDisplay.textContent = selected.title;
+                mainPlayOverlay.style.display = 'flex';
             }
-            item.innerHTML = `
-                <div class="playlist-thumb-wrapper">
-                    <img src="${vid.poster}" alt="${vid.title}" class="playlist-thumb">
-                </div>
-                <div class="playlist-info">
-                    <span>${vid.title}</span>
-                </div>
-            `;
-            item.addEventListener('click', () => selectVideo(vid));
-            playlistContainer.appendChild(item);
-        });
+            renderGrid();
+        }
 
-        // 2. Render Video Lainnya (More Videos - Berjajar Menurun, Tanpa Thumbnail, Picu Smartlink)
-        extraPlaylistContainer.innerHTML = "";
-        extraVideos.forEach((vid) => {
-            const item = document.createElement('div');
-            item.className = 'extra-item';
-            item.innerHTML = `
-                <div class="folder-icon">📁</div>
-                <span>${vid.title}</span>
-            `;
-            // Ketika diklik, membuka smartlink terlebih dahulu di tab baru, lalu membuka video tujuan
-            item.addEventListener('click', () => {
-                window.open(SMARTLINK_URL, '_blank');
-                window.open(vid.url, '_blank');
-            });
-            extraPlaylistContainer.appendChild(item);
-        });
-    }
+        function filterVideos() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredVideos = allVideos.filter(v => v.title.toLowerCase().includes(query));
+            currentPage = 1;
+            renderGrid();
+        }
 
-    // Inisialisasi awal otomatis memutar Video 1
-    if (mainVideos.length > 0) {
-        selectVideo(mainVideos[0]);
-    }
-</script>
+        function renderGrid() {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
 
+            const totalPages = Math.ceil(filteredVideos.length / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = filteredVideos.slice(startIndex, endIndex);
+
+            if (paginatedItems.length === 0) {
+                grid.innerHTML = `<div style="grid-column: span 2; text-align: center; color: #9ca3af; padding: 20px;">Video tidak ditemukan</div>`;
+            } else {
+                paginatedItems.forEach(item => {
+                    const isActive = item.id === currentActiveId;
+                    const card = document.createElement('div');
+                    card.className = `video-card ${isActive ? 'active' : ''}`;
+                    card.onclick = () => selectVideo(item.id);
+
+                    card.innerHTML = `
+                        <div class="thumb-box">
+                            ${isActive ? '<div class="badge-playing">DIPUTAR</div>' : ''}
+                            <img src="${item.thumb}" alt="Thumbnail">
+                            <div class="video-duration">${item.duration}</div>
+                            <div class="thumb-play-btn">
+                                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <div class="card-title">${item.title}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            document.getElementById('pageIndicator').textContent = `Halaman ${currentPage} / ${totalPages}`;
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('paginationNumbers');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = `num-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => changePage(i);
+                container.appendChild(btn);
+            }
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredVideos.length / itemsPerPage) || 1;
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderGrid();
+        }
+
+        renderGrid();
+    </script>
 </body>
 </html>
